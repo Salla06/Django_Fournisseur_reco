@@ -1,196 +1,183 @@
 {% extends 'suppliers/base.html' %}
 
 {% block title %}{% if action == 'add' %}Ajouter un produit{% else %}Modifier — {{ product.name }}{% endif %}{% endblock %}
-{% block page_title %}{% if action == 'add' %}Ajouter un produit{% else %}Modifier le produit{% endif %}{% endblock %}
 
 {% block content %}
-<div class="sp-page-header">
+<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
   <div>
-    <h1 class="sp-page-title">
-      {% if action == 'add' %}Nouveau produit{% else %}Modifier : {{ product.name }}{% endif %}
-    </h1>
-    <p class="sp-page-sub">
-      {% if action == 'add' %}
-        Renseignez les informations du produit. Il sera visible sur la boutique RecoShop.
-      {% else %}
-        Modifiez les informations du produit.
-      {% endif %}
-    </p>
+    <h2>{% if action == 'add' %}Nouveau produit{% else %}Modifier : {{ product.name }}{% endif %}</h2>
+    <p>{% if action == 'add' %}Le produit sera visible sur la boutique RecoShop après création.{% else %}Modifiez les informations du produit.{% endif %}</p>
   </div>
-  <a href="{% url 'supplier_products' %}" class="sp-btn sp-btn-ghost">
-    ← Retour aux produits
-  </a>
+  <a href="{% url 'supplier_products' %}" class="btn btn-ghost">← Retour aux produits</a>
 </div>
 
-<div class="sp-form-layout">
+<div class="supplier-form-grid">
 
-  <!-- Formulaire principal -->
-  <div class="sp-form-main">
-    <form method="post" id="productForm">
-      {% csrf_token %}
+  <!-- Formulaire -->
+  <form method="post" id="productForm">
+    {% csrf_token %}
 
-      <div class="sp-card">
-        <div class="sp-card-header">
-          <h2 class="sp-card-title">Informations générales</h2>
-        </div>
-        <div class="sp-card-body">
-
-          <div class="sp-field">
-            <label class="sp-label" for="id_name">Nom du produit <span class="sp-required">*</span></label>
-            <input type="text" name="name" id="id_name" class="sp-input {% if form.name.errors %}sp-input-error{% endif %}"
-                   value="{{ form.name.value|default:'' }}"
-                   placeholder="Ex : Sneakers Running Pro" required oninput="updatePreview()">
-            {% if form.name.errors %}<span class="sp-field-error">{{ form.name.errors.0 }}</span>{% endif %}
-          </div>
-
-          <div class="sp-field-row">
-            <div class="sp-field">
-              <label class="sp-label" for="id_category">Catégorie <span class="sp-required">*</span></label>
-              <select name="category" id="id_category" class="sp-input sp-select {% if form.category.errors %}sp-input-error{% endif %}" required oninput="updatePreview()">
-                <option value="">— Choisir une catégorie —</option>
-                {% for cat in form.category.field.queryset %}
-                  <option value="{{ cat.pk }}" {% if form.category.value|stringformat:'s' == cat.pk|stringformat:'s' %}selected{% endif %}>
-                    {{ cat.name }}
-                  </option>
-                {% endfor %}
-              </select>
-              {% if form.category.errors %}<span class="sp-field-error">{{ form.category.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="sp-field">
-              <label class="sp-label" for="id_brand">Marque</label>
-              <input type="text" name="brand" id="id_brand" class="sp-input"
-                     value="{{ form.brand.value|default:'' }}" placeholder="Ex : Nike, Samsung…" oninput="updatePreview()">
-            </div>
-          </div>
-
-          <div class="sp-field">
-            <label class="sp-label" for="id_description">Description <span class="sp-required">*</span></label>
-            <textarea name="description" id="id_description" class="sp-input sp-textarea {% if form.description.errors %}sp-input-error{% endif %}"
-                      rows="4" placeholder="Décrivez votre produit en détail…" required oninput="updatePreview()">{{ form.description.value|default:'' }}</textarea>
-            {% if form.description.errors %}<span class="sp-field-error">{{ form.description.errors.0 }}</span>{% endif %}
-          </div>
-
-          <div class="sp-field">
-            <label class="sp-label" for="id_tags">Tags <span class="sp-field-hint">(séparés par des virgules)</span></label>
-            <input type="text" name="tags" id="id_tags" class="sp-input"
-                   value="{{ form.tags.value|default:'' }}" placeholder="sport, running, extérieur, homme">
-          </div>
-
-        </div>
+    <!-- Informations générales -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden;">
+      <div class="supplier-section__header">
+        <span class="supplier-section__title">Informations générales</span>
       </div>
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
 
-      <!-- Prix & Stock -->
-      <div class="sp-card" style="margin-top:1.25rem;">
-        <div class="sp-card-header">
-          <h2 class="sp-card-title">Prix & Stock</h2>
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">Nom du produit *</label>
+          <input type="text" name="name" class="form-input"
+                 value="{{ form.name.value|default:'' }}"
+                 placeholder="Ex : Sneakers Running Pro" required oninput="updatePreview()">
+          {% if form.name.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.name.errors.0 }}</p>{% endif %}
         </div>
-        <div class="sp-card-body">
 
-          <div class="sp-field-row">
-            <div class="sp-field">
-              <label class="sp-label" for="id_price">Prix (FCFA) <span class="sp-required">*</span></label>
-              <input type="number" name="price" id="id_price" class="sp-input {% if form.price.errors %}sp-input-error{% endif %}"
-                     value="{{ form.price.value|default:'' }}" min="0" step="0.01" required oninput="updatePreview()">
-              {% if form.price.errors %}<span class="sp-field-error">{{ form.price.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="sp-field">
-              <label class="sp-label" for="id_original_price">Prix barré (FCFA) <span class="sp-field-hint">optionnel</span></label>
-              <input type="number" name="original_price" id="id_original_price" class="sp-input"
-                     value="{{ form.original_price.value|default:'' }}" min="0" step="0.01" oninput="updatePreview()">
-            </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Catégorie *</label>
+            <select name="category" class="form-input" required onchange="updatePreview()">
+              <option value="">— Choisir —</option>
+              {% for cat in form.category.field.queryset %}
+                <option value="{{ cat.pk }}" {% if form.category.value|stringformat:'s' == cat.pk|stringformat:'s' %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+            {% if form.category.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.category.errors.0 }}</p>{% endif %}
           </div>
-
-          <div class="sp-field-row">
-            <div class="sp-field">
-              <label class="sp-label" for="id_stock">Stock disponible <span class="sp-required">*</span></label>
-              <input type="number" name="stock" id="id_stock" class="sp-input {% if form.stock.errors %}sp-input-error{% endif %}"
-                     value="{{ form.stock.value|default:'100' }}" min="0" required>
-              {% if form.stock.errors %}<span class="sp-field-error">{{ form.stock.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="sp-field sp-field-check">
-              <label class="sp-checkbox-label">
-                <input type="checkbox" name="is_featured" id="id_is_featured"
-                       {% if form.is_featured.value %}checked{% endif %}
-                       class="sp-checkbox">
-                <span class="sp-checkbox-custom"></span>
-                Produit mis en avant
-              </label>
-              <p class="sp-field-hint-text">Le produit apparaîtra dans la section vedette de la boutique</p>
-            </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Marque</label>
+            <input type="text" name="brand" class="form-input"
+                   value="{{ form.brand.value|default:'' }}" placeholder="Ex : Nike, Samsung…" oninput="updatePreview()">
           </div>
-
         </div>
+
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">Description *</label>
+          <textarea name="description" class="form-input" rows="4"
+                    placeholder="Décrivez votre produit en détail…" required oninput="updatePreview()">{{ form.description.value|default:'' }}</textarea>
+          {% if form.description.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.description.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">Tags <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);">(séparés par des virgules)</span></label>
+          <input type="text" name="tags" class="form-input"
+                 value="{{ form.tags.value|default:'' }}" placeholder="sport, running, extérieur, homme">
+        </div>
+
       </div>
+    </div>
 
-      <!-- Image & Visuel -->
-      <div class="sp-card" style="margin-top:1.25rem;">
-        <div class="sp-card-header">
-          <h2 class="sp-card-title">Visuel du produit</h2>
-        </div>
-        <div class="sp-card-body">
-
-          <div class="sp-field">
-            <label class="sp-label" for="id_image_url">URL de l'image</label>
-            <input type="url" name="image_url" id="id_image_url" class="sp-input"
-                   value="{{ form.image_url.value|default:'' }}"
-                   placeholder="https://images.unsplash.com/…" oninput="updatePreview()">
-            <p class="sp-field-hint-text">Laissez vide pour utiliser la couleur et l'emoji ci-dessous</p>
-          </div>
-
-          <div class="sp-field-row">
-            <div class="sp-field">
-              <label class="sp-label" for="id_image_color">Couleur de la carte</label>
-              <div style="display:flex;gap:.75rem;align-items:center;">
-                <input type="color" name="image_color" id="id_image_color" class="sp-color-input"
-                       value="{{ form.image_color.value|default:'#2563eb' }}" oninput="updatePreview()">
-                <span id="colorHex" class="sp-color-hex">{{ form.image_color.value|default:'#2563eb' }}</span>
-              </div>
-            </div>
-            <div class="sp-field">
-              <label class="sp-label" for="id_image_emoji">Emoji représentatif</label>
-              <input type="text" name="image_emoji" id="id_image_emoji" class="sp-input"
-                     value="{{ form.image_emoji.value|default:'🛍️' }}" maxlength="10"
-                     style="font-size:1.5rem;text-align:center;" oninput="updatePreview()">
-            </div>
-          </div>
-
-        </div>
+    <!-- Prix & Stock -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden;">
+      <div class="supplier-section__header">
+        <span class="supplier-section__title">Prix & Stock</span>
       </div>
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
 
-      <!-- Actions -->
-      <div class="sp-form-actions">
-        <a href="{% url 'supplier_products' %}" class="sp-btn sp-btn-ghost">Annuler</a>
-        <button type="submit" class="sp-btn sp-btn-primary">
-          {% if action == 'add' %}Créer le produit{% else %}Enregistrer les modifications{% endif %}
-        </button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Prix (FCFA) *</label>
+            <input type="number" name="price" class="form-input"
+                   value="{{ form.price.value|default:'' }}" min="0" step="0.01" required oninput="updatePreview()">
+            {% if form.price.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.price.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Prix barré (FCFA) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);">optionnel</span></label>
+            <input type="number" name="original_price" class="form-input"
+                   value="{{ form.original_price.value|default:'' }}" min="0" step="0.01" oninput="updatePreview()">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Stock disponible *</label>
+            <input type="number" name="stock" class="form-input"
+                   value="{{ form.stock.value|default:'100' }}" min="0" required>
+            {% if form.stock.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.stock.errors.0 }}</p>{% endif %}
+          </div>
+          <div style="padding-top:8px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.875rem;color:var(--text);">
+              <input type="checkbox" name="is_featured" {% if form.is_featured.value %}checked{% endif %}
+                     style="width:16px;height:16px;accent-color:var(--accent);">
+              <span><strong>Produit mis en avant</strong><br>
+              <span style="font-size:.75rem;color:var(--text-muted);">Apparaît dans la section vedette</span></span>
+            </label>
+          </div>
+        </div>
+
       </div>
+    </div>
 
-    </form>
-  </div>
+    <!-- Visuel -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);margin-bottom:24px;overflow:hidden;">
+      <div class="supplier-section__header">
+        <span class="supplier-section__title">Visuel du produit</span>
+      </div>
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">URL de l'image</label>
+          <input type="url" name="image_url" class="form-input"
+                 value="{{ form.image_url.value|default:'' }}"
+                 placeholder="https://images.unsplash.com/…" oninput="updatePreview()">
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">Laissez vide pour utiliser la couleur et l'emoji.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Couleur de la carte</label>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <input type="color" name="image_color" id="id_image_color"
+                     value="{{ form.image_color.value|default:'#2563eb' }}"
+                     style="width:48px;height:36px;padding:2px;border:1.5px solid var(--divider);border-radius:var(--radius-sm);cursor:pointer;background:none;"
+                     oninput="document.getElementById('colorHex').textContent=this.value;updatePreview()">
+              <code id="colorHex" style="font-size:.8rem;color:var(--text-muted);">{{ form.image_color.value|default:'#2563eb' }}</code>
+            </div>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Emoji représentatif</label>
+            <input type="text" name="image_emoji" id="id_image_emoji" class="form-input"
+                   value="{{ form.image_emoji.value|default:'🛍️' }}" maxlength="10"
+                   style="font-size:1.5rem;text-align:center;" oninput="updatePreview()">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <a href="{% url 'supplier_products' %}" class="btn btn-ghost">Annuler</a>
+      <button type="submit" class="btn btn-primary btn-shimmer">
+        {% if action == 'add' %}Créer le produit{% else %}Enregistrer les modifications{% endif %}
+      </button>
+    </div>
+
+  </form>
 
   <!-- Aperçu -->
-  <div class="sp-form-aside">
-    <div class="sp-card sp-sticky">
-      <div class="sp-card-header">
-        <h2 class="sp-card-title">Aperçu de la carte</h2>
+  <div>
+    <div class="supplier-preview-card">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--divider);">
+        <span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);">Aperçu sur la boutique</span>
       </div>
-      <div class="sp-card-body">
-        <p class="sp-field-hint-text" style="margin-bottom:1rem;">Telle qu'elle apparaîtra sur l'interface client</p>
-        <!-- Mini product card preview -->
-        <div class="sp-preview-card" id="previewCard">
-          <div class="sp-preview-image" id="previewImage">
-            <span id="previewEmoji">{{ form.image_emoji.value|default:'🛍️' }}</span>
-          </div>
-          <div class="sp-preview-body">
-            <span class="sp-preview-category" id="previewCategory">Catégorie</span>
-            <h3 class="sp-preview-name" id="previewName">Nom du produit</h3>
-            <p class="sp-preview-desc" id="previewDesc">Description du produit…</p>
-            <div class="sp-preview-footer">
-              <span class="sp-preview-price" id="previewPrice">0 FCFA</span>
-              <span class="sp-preview-brand" id="previewBrand"></span>
+      <div class="product-card" style="border:none;border-radius:0;margin:0;cursor:default;" id="previewCard">
+        <div class="product-card__image" id="previewImage">
+          <div class="product-card__emoji" id="previewEmoji">{{ form.image_emoji.value|default:'🛍️' }}</div>
+        </div>
+        <div class="product-card__info">
+          <div class="product-card__category" id="previewCategory">Catégorie</div>
+          <div class="product-card__name" id="previewName">Nom du produit</div>
+          <div class="product-card__brand" id="previewBrand"></div>
+          <div class="product-card__footer">
+            <div>
+              <span class="product-card__price" id="previewPrice">0 FCFA</span>
+              <span class="product-card__original" id="previewOriginal"></span>
             </div>
           </div>
         </div>
+      </div>
+      <div style="padding:12px 16px;border-top:1px solid var(--divider);font-size:.72rem;color:var(--text-muted);text-align:center;">
+        Mise à jour en temps réel
       </div>
     </div>
   </div>
@@ -201,27 +188,27 @@
 {% block extra_js %}
 <script>
 function updatePreview() {
-  const name = document.getElementById('id_name').value || 'Nom du produit';
-  const desc = document.getElementById('id_description').value || 'Description du produit…';
-  const price = document.getElementById('id_price').value || '0';
-  const brand = document.getElementById('id_brand').value || '';
-  const emoji = document.getElementById('id_image_emoji').value || '🛍️';
-  const color = document.getElementById('id_image_color').value || '#2563eb';
-  const imageUrl = document.getElementById('id_image_url').value;
-  const catSel = document.getElementById('id_category');
-  const catName = catSel.options[catSel.selectedIndex]?.text || 'Catégorie';
+  const name     = document.querySelector('[name=name]').value || 'Nom du produit';
+  const desc     = document.querySelector('[name=description]').value || '';
+  const price    = parseFloat(document.querySelector('[name=price]').value) || 0;
+  const orig     = parseFloat(document.querySelector('[name=original_price]').value) || 0;
+  const brand    = document.querySelector('[name=brand]').value || '';
+  const emoji    = document.getElementById('id_image_emoji').value || '🛍️';
+  const color    = document.getElementById('id_image_color').value || '#2563eb';
+  const imgUrl   = document.querySelector('[name=image_url]').value;
+  const catSel   = document.querySelector('[name=category]');
+  const catName  = catSel.options[catSel.selectedIndex]?.text || 'Catégorie';
 
-  document.getElementById('previewName').textContent = name.substring(0, 30);
-  document.getElementById('previewDesc').textContent = desc.substring(0, 80);
-  document.getElementById('previewPrice').textContent = parseInt(price || 0).toLocaleString('fr') + ' FCFA';
+  document.getElementById('previewName').textContent = name.substring(0, 40);
   document.getElementById('previewBrand').textContent = brand;
+  document.getElementById('previewPrice').textContent = price.toLocaleString('fr') + ' FCFA';
+  document.getElementById('previewOriginal').textContent = orig > price ? orig.toLocaleString('fr') + ' FCFA' : '';
   document.getElementById('previewEmoji').textContent = emoji;
-  document.getElementById('previewCategory').textContent = catName !== '— Choisir une catégorie —' ? catName : 'Catégorie';
-  document.getElementById('colorHex').textContent = color;
+  document.getElementById('previewCategory').textContent = catName.startsWith('—') ? 'Catégorie' : catName;
 
   const imgEl = document.getElementById('previewImage');
-  if (imageUrl) {
-    imgEl.style.backgroundImage = `url(${imageUrl})`;
+  if (imgUrl) {
+    imgEl.style.backgroundImage = `url(${imgUrl})`;
     imgEl.style.backgroundSize = 'cover';
     imgEl.style.backgroundPosition = 'center';
     imgEl.style.backgroundColor = color;
@@ -232,12 +219,6 @@ function updatePreview() {
     document.getElementById('previewEmoji').style.opacity = '1';
   }
 }
-
-// Init preview
 document.addEventListener('DOMContentLoaded', updatePreview);
-document.getElementById('id_image_color').addEventListener('input', function() {
-  document.getElementById('colorHex').textContent = this.value;
-  updatePreview();
-});
 </script>
 {% endblock %}

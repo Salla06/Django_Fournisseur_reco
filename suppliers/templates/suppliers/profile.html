@@ -1,131 +1,155 @@
 {% extends 'suppliers/base.html' %}
 
 {% block title %}Mon profil{% endblock %}
-{% block page_title %}Mon profil{% endblock %}
 
 {% block content %}
-<div class="sp-page-header">
+<div class="page-header">
   <div>
-    <h1 class="sp-page-title">Mon profil fournisseur</h1>
-    <p class="sp-page-sub">Gérez les informations de votre entreprise</p>
+    <h2>Mon profil fournisseur</h2>
+    <p>Gérez les informations de votre entreprise et vos paramètres de sécurité.</p>
   </div>
 </div>
 
-<div class="sp-two-col">
+<div class="layout-with-sidebar">
 
-  <!-- Informations entreprise -->
+  <!-- Colonne principale -->
   <div>
-    <div class="sp-card">
-      <div class="sp-card-header">
-        <h2 class="sp-card-title">Informations de l'entreprise</h2>
+
+    <!-- Informations entreprise -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden;">
+      <div class="supplier-section__header">
+        <span class="supplier-section__title">Informations de l'entreprise</span>
       </div>
-      <div class="sp-card-body">
+      <div style="padding:24px;">
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
 
-          <!-- Logo actuel -->
           {% if supplier.logo %}
-          <div style="margin-bottom:1.5rem;text-align:center;">
-            <img src="{{ supplier.logo.url }}" alt="Logo" style="max-height:100px;border-radius:8px;border:2px solid var(--sp-border);">
+          <div style="text-align:center;margin-bottom:20px;">
+            <img src="{{ supplier.logo.url }}" alt="Logo"
+                 style="max-height:100px;border-radius:var(--radius-md);border:1px solid var(--divider);">
           </div>
           {% endif %}
 
-          <div class="sp-field">
-            <label class="sp-label" for="id_logo">Logo de l'entreprise</label>
-            <input type="file" name="logo" id="id_logo" class="sp-input sp-file-input" accept="image/*">
-            <p class="sp-field-hint-text">PNG, JPG ou WebP — max 5 Mo</p>
+          <div class="form-group">
+            <label class="form-label">Logo de l'entreprise</label>
+            <input type="file" name="logo" class="form-input" accept="image/*" style="padding:10px;">
+            <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">PNG, JPG ou WebP</p>
           </div>
 
-          <div class="sp-field">
-            <label class="sp-label" for="id_company_name">Nom de l'entreprise <span class="sp-required">*</span></label>
-            <input type="text" name="company_name" id="id_company_name" class="sp-input {% if form.company_name.errors %}sp-input-error{% endif %}"
+          <div class="form-group">
+            <label class="form-label">Nom de l'entreprise *</label>
+            <input type="text" name="company_name" class="form-input"
                    value="{{ form.company_name.value|default:'' }}" required>
-            {% if form.company_name.errors %}<span class="sp-field-error">{{ form.company_name.errors.0 }}</span>{% endif %}
+            {% if form.company_name.errors %}<p style="color:var(--cta);font-size:.8rem;margin-top:6px;">{{ form.company_name.errors.0 }}</p>{% endif %}
           </div>
 
-          <div class="sp-field">
-            <label class="sp-label" for="id_phone">Téléphone</label>
-            <input type="text" name="phone" id="id_phone" class="sp-input"
+          <div class="form-group">
+            <label class="form-label">Téléphone</label>
+            <input type="text" name="phone" class="form-input"
                    value="{{ form.phone.value|default:'' }}" placeholder="+221 77 000 00 00">
           </div>
 
-          <div class="sp-field">
-            <label class="sp-label" for="id_address">Adresse</label>
-            <textarea name="address" id="id_address" class="sp-input sp-textarea" rows="3"
+          <div class="form-group">
+            <label class="form-label">Adresse</label>
+            <textarea name="address" class="form-input" rows="3"
                       placeholder="Votre adresse complète…">{{ form.address.value|default:'' }}</textarea>
           </div>
 
-          <div class="sp-field">
-            <label class="sp-label" for="id_bio">Présentation de l'entreprise</label>
-            <textarea name="bio" id="id_bio" class="sp-input sp-textarea" rows="4"
+          <div class="form-group">
+            <label class="form-label">Présentation de l'entreprise</label>
+            <textarea name="bio" class="form-input" rows="4"
                       placeholder="Décrivez votre entreprise et vos spécialités…">{{ form.bio.value|default:'' }}</textarea>
           </div>
 
-          <div class="sp-form-actions" style="margin-top:1.5rem;">
-            <button type="submit" class="sp-btn sp-btn-primary">Enregistrer les informations</button>
-          </div>
+          <button type="submit" class="btn btn-primary btn-shimmer">Enregistrer les informations</button>
         </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Compte et sécurité -->
-  <div>
-
-    <!-- Infos compte -->
-    <div class="sp-card" style="margin-bottom:1.25rem;">
-      <div class="sp-card-header">
-        <h2 class="sp-card-title">Compte</h2>
-      </div>
-      <div class="sp-card-body">
-        <div class="sp-profile-info-row">
-          <span class="sp-profile-info-label">Email</span>
-          <span class="sp-profile-info-value">{{ user.email }}</span>
-        </div>
-        <div class="sp-profile-info-row">
-          <span class="sp-profile-info-label">Membre depuis</span>
-          <span class="sp-profile-info-value">{{ supplier.created_at|date:"d/m/Y" }}</span>
-        </div>
-        <div class="sp-profile-info-row">
-          <span class="sp-profile-info-label">Statut</span>
-          <span class="sp-profile-info-value">
-            {% if supplier.is_verified %}
-              <span class="sp-badge sp-badge-verified">✓ Compte vérifié</span>
-            {% else %}
-              <span class="sp-badge sp-badge-pending">En attente de vérification</span>
-            {% endif %}
-          </span>
-        </div>
       </div>
     </div>
 
     <!-- Changer le mot de passe -->
-    <div class="sp-card">
-      <div class="sp-card-header">
-        <h2 class="sp-card-title">Changer le mot de passe</h2>
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);overflow:hidden;">
+      <div class="supplier-section__header">
+        <span class="supplier-section__title">Changer le mot de passe</span>
       </div>
-      <div class="sp-card-body">
+      <div style="padding:24px;">
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
-          <!-- Champs vides pour que Django identifie ce formulaire comme le profil -->
           <input type="hidden" name="company_name" value="{{ supplier.company_name }}">
 
-          <div class="sp-field">
-            <label class="sp-label" for="new_password1">Nouveau mot de passe</label>
-            <input type="password" name="new_password1" id="new_password1" class="sp-input" placeholder="8 caractères minimum" minlength="8">
+          <div class="form-group">
+            <label class="form-label">Nouveau mot de passe</label>
+            <input type="password" name="new_password1" class="form-input"
+                   placeholder="8 caractères minimum" minlength="8">
           </div>
-          <div class="sp-field">
-            <label class="sp-label" for="new_password2">Confirmer le nouveau mot de passe</label>
-            <input type="password" name="new_password2" id="new_password2" class="sp-input" placeholder="••••••••" minlength="8">
+          <div class="form-group">
+            <label class="form-label">Confirmer le nouveau mot de passe</label>
+            <input type="password" name="new_password2" class="form-input"
+                   placeholder="••••••••" minlength="8">
           </div>
-
-          <div class="sp-form-actions" style="margin-top:1rem;">
-            <button type="submit" class="sp-btn sp-btn-secondary">Changer le mot de passe</button>
-          </div>
+          <button type="submit" class="btn btn-dark">Changer le mot de passe</button>
         </form>
       </div>
     </div>
 
   </div>
+
+  <!-- Sidebar — informations du compte -->
+  <div class="sidebar">
+
+    <!-- Avatar -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div class="profile-avatar" style="margin:0 auto 12px;">
+        {% if supplier.logo %}
+          <img src="{{ supplier.logo.url }}" alt="{{ supplier.company_name }}">
+        {% else %}
+          {{ supplier.company_name|first|upper }}
+        {% endif %}
+      </div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--text);">
+        {{ supplier.company_name }}
+      </div>
+      <div style="font-size:.8rem;color:var(--text-muted);margin-top:2px;">{{ user.email }}</div>
+      {% if supplier.is_verified %}
+        <span style="display:inline-flex;margin-top:8px;padding:3px 10px;background:var(--accent-dim);color:var(--accent);font-size:.7rem;font-weight:700;border-radius:var(--pill);letter-spacing:.06em;">✓ Vérifié</span>
+      {% endif %}
+    </div>
+
+    <div class="divider"></div>
+
+    <h3>Compte</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">📧</div>
+        <div class="timeline-content">
+          <div class="timeline-content__title">Email</div>
+          <div class="timeline-content__sub">{{ user.email }}</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">📅</div>
+        <div class="timeline-content">
+          <div class="timeline-content__title">Membre depuis</div>
+          <div class="timeline-content__sub">{{ supplier.created_at|date:"d/m/Y" }}</div>
+        </div>
+      </div>
+      {% if supplier.phone %}
+      <div class="timeline-item">
+        <div class="timeline-dot">📞</div>
+        <div class="timeline-content">
+          <div class="timeline-content__title">Téléphone</div>
+          <div class="timeline-content__sub">{{ supplier.phone }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <h3>Navigation rapide</h3>
+    <a href="{% url 'supplier_dashboard' %}" class="btn btn-ghost btn-sm" style="display:flex;width:100%;margin-bottom:8px;">Tableau de bord</a>
+    <a href="{% url 'supplier_products' %}" class="btn btn-ghost btn-sm" style="display:flex;width:100%;margin-bottom:8px;">Mes produits</a>
+    <a href="{% url 'supplier_product_add' %}" class="btn btn-primary btn-sm btn-shimmer" style="display:flex;width:100%;">+ Ajouter un produit</a>
+
+  </div>
 </div>
+
 {% endblock %}

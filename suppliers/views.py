@@ -2,12 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.conf import settings
 from django.db.models import Avg, Count, Sum, Q
 from functools import wraps
 import json
@@ -53,87 +47,19 @@ def register_view(request):
             username = f"{base_username}{counter}"
             counter += 1
 
-        user = CustomUser(
+        user = CustomUser.objects.create_user(
             email=email,
             username=username,
-            is_active=False,
+            password=password,
         )
-        user.set_password(password)
-        user.save()
-
-        # Envoyer l'email d'activation
-        _send_activation_email(request, user, company_name)
-
-        request.session['pending_company_name'] = company_name
-        return redirect('supplier_email_sent')
-
-    return render(request, 'suppliers/register.html', {'form': form})
-
-
-def _send_activation_email(request, user, company_name):
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
-    domain = request.get_host()
-    protocol = 'https' if request.is_secure() else 'http'
-    activation_url = f"{protocol}://{domain}/suppliers/activate/{uid}/{token}/"
-
-    subject = 'Activez votre compte fournisseur RecoShop'
-    html_message = render_to_string('suppliers/emails/activation.html', {
-        'user': user,
-        'company_name': company_name,
-        'activation_url': activation_url,
-    })
-    plain_message = (
-        f"Bonjour,\n\n"
-        f"Pour activer votre compte fournisseur ({company_name}) sur RecoShop, "
-        f"cliquez sur ce lien :\n{activation_url}\n\n"
-        f"Ce lien expire dans 24 heures.\n\nL'équipe RecoShop"
-    )
-
-    try:
-        send_mail(
-            subject=subject,
-            message=plain_message,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@recoshop.com'),
-            recipient_list=[user.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
-    except Exception:
-        # En dev sans serveur email, on continue quand même
-        pass
-
-
-def email_sent_view(request):
-    return render(request, 'suppliers/email_sent.html')
-
-
-def activate_view(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = CustomUser.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-        user = None
-
-    if user is not None and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-
-        # Récupérer le nom d'entreprise depuis la session ou utiliser un défaut
-        company_name = request.session.pop('pending_company_name', user.username)
-
-        Supplier.objects.get_or_create(
-            user=user,
-            defaults={'company_name': company_name},
-        )
+        Supplier.objects.create(user=user, company_name=company_name)
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         messages.success(request, f'Bienvenue sur l\'espace fournisseur, {company_name} !')
         return redirect('supplier_dashboard')
-    else:
-        messages.error(request, 'Le lien d\'activation est invalide ou a expiré.')
-        return redirect('supplier_register')
+
+    return render(request, 'suppliers/register.html', {'form': form})
 
 
 def login_view(request):
