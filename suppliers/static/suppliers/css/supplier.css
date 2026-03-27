@@ -313,11 +313,26 @@ body.supplier-body .mobile-menu {
   .supplier-delete-thumb { background: var(--accent-dim); }
 }
 
-/* ── Responsive table ── */
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  /* Profile + detail : empile les 2 colonnes */
+  [style*="grid-template-columns:1fr 300px"],
+  [style*="grid-template-columns: 1fr 300px"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* Sticky panel : désactive le sticky sur mobile */
+  [style*="position:sticky"] {
+    position: static !important;
+  }
+}
 @media (max-width: 768px) {
   .supplier-stats-grid { grid-template-columns: 1fr 1fr; }
   .supplier-table th:nth-child(3),
   .supplier-table td:nth-child(3),
   .supplier-table th:nth-child(5),
   .supplier-table td:nth-child(5) { display: none; }
+  /* Formulaire mot de passe 2 colonnes → 1 */
+  [style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
 }
