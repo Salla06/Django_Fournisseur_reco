@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}RecoShop{% endblock %} — L'Art du Shopping</title>
+
+<!-- Anti-flash : applique le thème sauvegardé AVANT le rendu -->
+<script>
+  (function(){
+    var t = localStorage.getItem('recoshop-theme');
+    if (t === 'dark') document.documentElement.setAttribute('data-theme','dark');
+  })();
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- Design system -->
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Scroll progress -->
+<div id="scroll-progress"></div>
+
+<!-- Custom cursor (desktop) -->
+<div id="custom-cursor"></div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+{% if user.is_authenticated %}
+
+<!-- ═══════ NAVBAR ═══════ -->
+<nav class="navbar" id="mainNavbar">
+
+  <!-- Logo -->
+  <a href="{% url 'home' %}" class="navbar-logo">RecoShop</a>
+
+  <!-- Search bar -->
+  <form action="{% url 'products' %}" method="get" class="navbar-search">
+    <span class="navbar-search-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </span>
+    <input type="text" name="q" placeholder="Rechercher un produit, une marque…" value="{{ request.GET.q }}" autocomplete="off">
+  </form>
+
+  <!-- Nav links -->
+  <nav class="navbar-nav">
+    <a href="{% url 'home' %}"
+       class="navbar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      Accueil
+    </a>
+    <a href="{% url 'products' %}"
+       class="navbar-link {% if request.resolver_match.url_name == 'products' or request.resolver_match.url_name == 'product_detail' %}active{% endif %}">
+      Boutique
+    </a>
+    <a href="{% url 'recommendations' %}"
+       class="navbar-link {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}">
+      Pour vous
+    </a>
+
+    <!-- Theme toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Changer de thème">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+
+    <!-- Cart icon -->
+    <a href="{% url 'cart' %}" class="navbar-btn" title="Mon panier"
+       style="{% if request.resolver_match.url_name == 'cart' %}border-color:var(--accent);{% endif %}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      {% if cart_count > 0 %}
+        <span class="navbar-badge">{{ cart_count }}</span>
+      {% endif %}
+    </a>
+
+    <!-- Profile icon -->
+    <a href="{% url 'profile' %}" class="navbar-btn" title="Mon profil"
+       style="{% if request.resolver_match.url_name == 'profile' %}border-color:var(--accent);{% endif %} overflow:hidden; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:.85rem;">
+      {% if user.profile_pic %}
+        <img src="{{ user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+      {% else %}
+        {{ user.username|first|upper }}
+      {% endif %}
+    </a>
+
+    <!-- Logout -->
+    <a href="{% url 'logout' %}" class="navbar-btn" title="Déconnexion">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </a>
+
+    <!-- Hamburger (mobile) -->
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="{% url 'home' %}">Accueil</a>
+  <a href="{% url 'products' %}">Boutique</a>
+  <a href="{% url 'recommendations' %}">Pour vous</a>
+  <a href="{% url 'cart' %}">Panier {% if cart_count > 0 %}({{ cart_count }}){% endif %}</a>
+  <a href="{% url 'profile' %}">Mon profil</a>
+  {% for cat in sidebar_categories %}
+  <a href="{% url 'products' %}?category={{ cat.slug }}">{{ cat.name }}</a>
+  {% endfor %}
+  <a onclick="toggleTheme()" style="cursor:pointer;">Changer le thème</a>
+  <a href="{% url 'logout' %}" style="color:var(--cta);">Déconnexion</a>
+</div>
+
+<!-- Page wrapper -->
+<div class="page-wrapper">
+
+  <!-- Flash messages -->
+  {% for message in messages %}
+  <div style="padding: 0 40px; padding-top: 16px; max-width: 1280px; margin: 0 auto;">
+    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %} fade-up">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ═══════ FOOTER ═══════ -->
+  <footer class="footer" style="position:relative;overflow:hidden;border-top:none;">
+
+    <!-- Background nocturne -->
+    <div style="position:absolute;inset:0;
+                background-image:url('https://images.unsplash.com/photo-1664718598078-adfbee4418ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080');
+                background-size:cover;
+                background-position:center 60%;
+                background-attachment:fixed;
+                z-index:0;"></div>
+    <!-- Overlay sombre pour lisibilité -->
+    <div style="position:absolute;inset:0;
+                background:linear-gradient(to bottom, rgba(6,10,6,0.92) 0%, rgba(6,10,6,0.96) 100%);
+                z-index:1;"></div>
+
+    <!-- Contenu -->
+    <div class="footer-grid" style="position:relative;z-index:2;">
+      <!-- Brand -->
+      <div>
+        <span class="footer-logo" style="color:#fff;">RecoShop</span>
+        <p class="footer-desc" style="color:rgba(255,255,255,0.55);">
+          Votre boutique personnalisée par intelligence artificielle.
+          Nos algorithmes de recommandation apprennent de vos préférences
+          pour vous offrir une expérience d'achat sur-mesure.
+        </p>
+      </div>
+      <!-- Navigation -->
+      <div class="footer-col">
+        <h4 style="color:rgba(255,255,255,0.90);">Navigation</h4>
+        <a href="{% url 'home' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Accueil</a>
+        <a href="{% url 'products' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Boutique</a>
+        <a href="{% url 'recommendations' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Recommandations</a>
+        <a href="{% url 'cart' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Panier</a>
+      </div>
+      <!-- Categories -->
+      <div class="footer-col">
+        <h4 style="color:rgba(255,255,255,0.90);">Catégories</h4>
+        {% for cat in sidebar_categories|slice:":5" %}
+        <a href="{% url 'products' %}?category={{ cat.slug }}" class="footer-link" style="color:rgba(255,255,255,0.55);">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      <!-- Compte -->
+      <div class="footer-col">
+        <h4 style="color:rgba(255,255,255,0.90);">Compte</h4>
+        <a href="{% url 'profile' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Mon profil</a>
+        <a href="{% url 'logout' %}" class="footer-link" style="color:rgba(255,255,255,0.55);">Déconnexion</a>
+      </div>
+    </div>
+    <div class="footer-bottom" style="position:relative;z-index:2;border-top:1px solid rgba(255,255,255,0.10);">
+      <span style="color:rgba(255,255,255,0.40);">© 2025 RecoShop — Système de recommandation e-commerce</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;color:var(--accent);font-weight:700;">
+        Collaboratif · Contenu · Hybride
+      </span>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+{% else %}
+<!-- Non-authenticated layout -->
+<main>
+  {% for message in messages %}
+  <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% block auth_content %}{% endblock %}
+</main>
+{% endif %}
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Main JS -->
+<script src="{% static 'recommendations/js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
