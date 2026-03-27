@@ -3,34 +3,61 @@
 {% block title %}Tableau de bord{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <div>
-    <h2>Bonjour, {{ supplier.company_name }}</h2>
-    <p>Voici un aperçu de vos performances sur RecoShop.</p>
+
+<!-- Bannière de bienvenue -->
+<div style="background:linear-gradient(135deg,#2563eb,#1e40af);border-radius:var(--radius-lg);padding:32px 40px;margin-bottom:28px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;opacity:.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:24px 24px;"></div>
+  <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <p style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px;">Espace Fournisseur</p>
+      <h2 style="font-family:'DM Serif Display',serif;color:#fff;font-size:1.9rem;font-weight:400;letter-spacing:-.02em;margin-bottom:6px;">{{ supplier.company_name }}</h2>
+      <p style="color:rgba(255,255,255,.65);font-size:.875rem;">Aperçu de vos performances sur RecoShop Pro.</p>
+    </div>
+    <a href="{% url 'supplier_product_add' %}" class="btn btn-shimmer" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(8px);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ajouter un produit
+    </a>
   </div>
-  <a href="{% url 'supplier_product_add' %}" class="btn btn-primary btn-shimmer">
-    + Ajouter un produit
-  </a>
 </div>
 
 <!-- Statistiques -->
 <div class="supplier-stats-grid">
   <div class="stat-card">
-    <div class="stat-card__value">{{ total_products }}</div>
-    <div class="stat-card__label">Produits référencés</div>
+    <div class="stat-card__icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    </div>
+    <div class="stat-card__body">
+      <div class="stat-card__value">{{ total_products }}</div>
+      <div class="stat-card__label">Produits référencés</div>
+    </div>
   </div>
   <div class="stat-card">
-    <div class="stat-card__value">{{ avg_rating }}<span style="font-size:1.4rem;color:var(--text-muted);">/5</span></div>
-    <div class="stat-card__label">Note moyenne</div>
+    <div class="stat-card__icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="stat-card__body">
+      <div class="stat-card__value">{{ avg_rating }}<span style="font-size:1.1rem;font-weight:400;color:var(--text-muted);">/5</span></div>
+      <div class="stat-card__label">Note moyenne</div>
+    </div>
   </div>
   <div class="stat-card">
-    <div class="stat-card__value">{{ avg_price|floatformat:0 }}<span style="font-size:1.2rem;color:var(--text-muted);"> F</span></div>
-    <div class="stat-card__label">Prix moyen</div>
+    <div class="stat-card__icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+    <div class="stat-card__body">
+      <div class="stat-card__value">{{ avg_price|floatformat:0 }}<span style="font-size:1rem;font-weight:400;color:var(--text-muted);"> F</span></div>
+      <div class="stat-card__label">Prix moyen</div>
+    </div>
   </div>
   {% if best_rated %}
   <div class="stat-card" style="cursor:pointer;" onclick="window.location='{% url 'supplier_product_detail' best_rated.pk %}'">
-    <div class="stat-card__value" style="font-size:1.1rem;line-height:1.3;">{{ best_rated.name|truncatechars:22 }}</div>
-    <div class="stat-card__label">Mieux noté</div>
+    <div class="stat-card__icon" style="background:rgba(37,99,235,.12);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+    </div>
+    <div class="stat-card__body">
+      <div class="stat-card__value" style="font-size:1rem;line-height:1.3;">{{ best_rated.name|truncatechars:20 }}</div>
+      <div class="stat-card__label">Mieux noté</div>
+    </div>
   </div>
   {% endif %}
 </div>

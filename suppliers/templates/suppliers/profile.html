@@ -3,11 +3,10 @@
 {% block title %}Mon profil{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <div>
-    <h2>Mon profil fournisseur</h2>
-    <p>Gérez les informations de votre entreprise et vos paramètres de sécurité.</p>
-  </div>
+<div style="margin-bottom:28px;">
+  <p style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:6px;">Compte</p>
+  <h2 style="font-family:'DM Serif Display',serif;font-size:1.9rem;font-weight:400;letter-spacing:-.02em;color:var(--text);">Mon profil fournisseur</h2>
+  <p style="color:var(--text-muted);font-size:.875rem;margin-top:4px;">Gérez les informations de votre entreprise et vos paramètres de sécurité.</p>
 </div>
 
 <div class="layout-with-sidebar" style="grid-template-columns:1fr 260px;">
@@ -97,22 +96,23 @@
   <!-- Sidebar — informations du compte -->
   <div class="sidebar">
 
-    <!-- Avatar -->
-    <div style="text-align:center;margin-bottom:20px;">
-      <div class="profile-avatar" style="margin:0 auto 12px;">
-        {% if supplier.logo %}
-          <img src="{{ supplier.logo.url }}" alt="{{ supplier.company_name }}">
-        {% else %}
-          {{ supplier.company_name|first|upper }}
+    <!-- Card identité -->
+    <div style="background:linear-gradient(135deg,#2563eb,#1e40af);border-radius:var(--radius-md);padding:24px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;opacity:.08;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:18px 18px;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.30);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1.4rem;color:#fff;">
+          {% if supplier.logo %}
+            <img src="{{ supplier.logo.url }}" alt="{{ supplier.company_name }}" style="width:100%;height:100%;object-fit:cover;">
+          {% else %}
+            {{ supplier.company_name|first|upper }}
+          {% endif %}
+        </div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff;margin-bottom:3px;">{{ supplier.company_name }}</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.65);">{{ user.email }}</div>
+        {% if supplier.is_verified %}
+          <span style="display:inline-flex;margin-top:10px;padding:3px 10px;background:rgba(255,255,255,.15);color:#fff;font-size:.65rem;font-weight:700;border-radius:var(--pill);letter-spacing:.06em;">✓ Vérifié</span>
         {% endif %}
       </div>
-      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--text);">
-        {{ supplier.company_name }}
-      </div>
-      <div style="font-size:.8rem;color:var(--text-muted);margin-top:2px;">{{ user.email }}</div>
-      {% if supplier.is_verified %}
-        <span style="display:inline-flex;margin-top:8px;padding:3px 10px;background:var(--accent-dim);color:var(--accent);font-size:.7rem;font-weight:700;border-radius:var(--pill);letter-spacing:.06em;">✓ Vérifié</span>
-      {% endif %}
     </div>
 
     <div class="divider"></div>

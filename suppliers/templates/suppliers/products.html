@@ -3,12 +3,16 @@
 {% block title %}Mes produits{% endblock %}
 
 {% block content %}
-<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
   <div>
-    <h2>Mes produits</h2>
-    <p>{{ products.count }} produit{{ products.count|pluralize }} référencé{{ products.count|pluralize }}</p>
+    <p style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:6px;">Catalogue</p>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:1.9rem;font-weight:400;letter-spacing:-.02em;color:var(--text);">Mes produits</h2>
+    <p style="color:var(--text-muted);font-size:.875rem;margin-top:4px;">{{ products.count }} produit{{ products.count|pluralize }} référencé{{ products.count|pluralize }}</p>
   </div>
-  <a href="{% url 'supplier_product_add' %}" class="btn btn-primary btn-shimmer">+ Ajouter un produit</a>
+  <a href="{% url 'supplier_product_add' %}" class="btn btn-primary btn-shimmer">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Ajouter un produit
+  </a>
 </div>
 
 <!-- Filtres -->
