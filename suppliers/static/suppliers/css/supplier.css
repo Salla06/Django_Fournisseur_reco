@@ -3,7 +3,7 @@
    Charge après main.css — remplace vert → bleu professionnel
 ═══════════════════════════════════════════════════════════ */
 
-/* ── Variables : accent vert → bleu #2563eb ── */
+/* ── Variables : accent vert → bleu #2563eb + fond baby blue ── */
 :root {
   --accent:        #2563eb;
   --accent-hover:  #1e40af;
@@ -17,6 +17,7 @@
   --badge-algo-text: #1e40af;
 
   --gradient: linear-gradient(135deg, #2563eb, #1e40af);
+
 }
 
 [data-theme="dark"] {
@@ -30,6 +31,13 @@
   --badge-algo:      #60a5fa;
   --badge-algo-bg:   rgba(96, 165, 250, 0.13);
   --badge-algo-text: #bfdbfe;
+
+  /* Fond sombre teinté bleu */
+  --bg:          #0c1220;
+  --bg-elevated: #111827;
+  --input-bg:    #1a2540;
+  --input-focus: #1e2d4e;
+  --navbar-bg:   rgba(12, 18, 32, 0.93);
 }
 
 /* ── Bandeau "Espace Pro" en haut de la navbar ── */
@@ -242,11 +250,39 @@ body.supplier-body .mobile-menu {
 .rating-bar-count { font-size: 0.72rem; color: var(--text-muted); width: 20px; }
 
 /* ── Delete confirmation page ── */
-.supplier-delete-box {
-  max-width: 520px; margin: 0 auto;
-  text-align: center; padding: 48px 32px;
+.supplier-delete-wrap { max-width: 520px; margin: 0 auto; }
+.supplier-delete-card {
+  background: var(--card); border: 1px solid var(--divider);
+  border-radius: var(--radius-lg); padding: 48px 40px; text-align: center;
 }
-.supplier-delete-icon { font-size: 4rem; margin-bottom: 16px; }
+.supplier-delete-icon { margin-bottom: 20px; }
+.supplier-delete-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px;
+}
+.supplier-delete-desc { color: var(--text-muted); line-height: 1.7; margin-bottom: 28px; }
+.supplier-delete-desc strong { color: var(--text); }
+.supplier-delete-summary {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card-2); border: 1px solid var(--divider);
+  border-radius: var(--radius-md); padding: 16px;
+  text-align: left; margin-bottom: 32px;
+}
+.supplier-delete-thumb {
+  width: 56px; height: 56px; border-radius: var(--radius);
+  background: color-mix(in srgb, var(--thumb-color, var(--accent)) 13%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; flex-shrink: 0; overflow: hidden;
+}
+.supplier-delete-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+.supplier-delete-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--text); }
+.supplier-delete-meta { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+.supplier-delete-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* Fallback si color-mix non supporté */
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .supplier-delete-thumb { background: var(--accent-dim); }
+}
 
 /* ── Responsive table ── */
 @media (max-width: 768px) {

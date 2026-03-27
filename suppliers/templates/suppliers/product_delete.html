@@ -3,44 +3,46 @@
 {% block title %}Supprimer — {{ product.name }}{% endblock %}
 
 {% block content %}
-<div style="max-width:520px;margin:0 auto;">
+<div class="supplier-delete-wrap">
 
-  <!-- Breadcrumb -->
   <div class="breadcrumb">
     <a href="{% url 'supplier_products' %}">Mes produits</a>
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     <span>Supprimer</span>
   </div>
 
-  <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-lg);padding:48px 40px;text-align:center;">
+  <div class="supplier-delete-card">
 
-    <div style="font-size:3.5rem;margin-bottom:20px;">⚠️</div>
+    <div class="supplier-delete-icon">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(239,68,68,0.10);display:flex;align-items:center;justify-content:center;margin:0 auto;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+    </div>
 
-    <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;">
-      Supprimer ce produit ?
-    </h2>
-    <p style="color:var(--text-muted);line-height:1.7;margin-bottom:28px;">
-      Cette action est <strong style="color:var(--text);">irréversible</strong>. Le produit
-      <strong style="color:var(--text);">« {{ product.name }} »</strong> sera définitivement
+    <h2 class="supplier-delete-title">Supprimer ce produit ?</h2>
+
+    <p class="supplier-delete-desc">
+      Cette action est <strong>irréversible</strong>. Le produit
+      <strong>« {{ product.name }} »</strong> sera définitivement
       supprimé avec toutes ses notes et commentaires.
     </p>
 
     <!-- Résumé produit -->
-    <div style="display:flex;align-items:center;gap:14px;background:var(--card-2);border:1px solid var(--divider);border-radius:var(--radius-md);padding:16px;text-align:left;margin-bottom:32px;">
-      <div style="width:56px;height:56px;border-radius:var(--radius);background:{{ product.image_color }}22;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;overflow:hidden;">
+    <div class="supplier-delete-summary">
+      <div class="supplier-delete-thumb" style="--thumb-color: {{ product.image_color }}">
         {% if product.image_url %}
-          <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="supplier-delete-thumb-img">
         {% else %}
           {{ product.image_emoji }}
         {% endif %}
       </div>
-      <div>
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--text);">{{ product.name }}</div>
-        <div style="font-size:.8rem;color:var(--text-muted);margin-top:2px;">{{ product.category.name }} · {{ product.price|floatformat:0 }} FCFA</div>
+      <div class="supplier-delete-info">
+        <div class="supplier-delete-name">{{ product.name }}</div>
+        <div class="supplier-delete-meta">{{ product.category.name }} · {{ product.price|floatformat:0 }} FCFA</div>
       </div>
     </div>
 
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <div class="supplier-delete-actions">
       <a href="{% url 'supplier_products' %}" class="btn btn-dark">← Annuler</a>
       <form method="post" action="{% url 'supplier_product_delete_confirm' product.pk %}">
         {% csrf_token %}

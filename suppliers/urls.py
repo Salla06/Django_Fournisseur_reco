@@ -4,8 +4,6 @@ from . import views
 urlpatterns = [
     # Auth
     path('register/', views.register_view, name='supplier_register'),
-    path('email-sent/', views.email_sent_view, name='supplier_email_sent'),
-    path('activate/<uidb64>/<token>/', views.activate_view, name='supplier_activate'),
     path('login/', views.login_view, name='supplier_login'),
     path('logout/', views.logout_view, name='supplier_logout'),
 

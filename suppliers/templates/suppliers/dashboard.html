@@ -30,7 +30,7 @@
   {% if best_rated %}
   <div class="stat-card" style="cursor:pointer;" onclick="window.location='{% url 'supplier_product_detail' best_rated.pk %}'">
     <div class="stat-card__value" style="font-size:1.1rem;line-height:1.3;">{{ best_rated.name|truncatechars:22 }}</div>
-    <div class="stat-card__label">Mieux noté 🏆</div>
+    <div class="stat-card__label">Mieux noté</div>
   </div>
   {% endif %}
 </div>
@@ -48,8 +48,10 @@
       <canvas id="ratingsChart" style="max-height:260px;"></canvas>
     {% else %}
       <div class="empty-state" style="padding:40px 0;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:12px;">📊</div>
-        <p style="color:var(--text-muted);">Aucune note reçue pour l'instant.</p>
+        <div style="width:44px;height:44px;border-radius:var(--radius-md);background:var(--accent-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg>
+        </div>
+        <p style="color:var(--text-muted);font-size:.875rem;">Aucune note reçue pour l'instant.</p>
       </div>
     {% endif %}
   </div>
@@ -74,9 +76,11 @@
         </div>
       {% endfor %}
     {% else %}
-      <div style="padding:40px;text-align:center;color:var(--text-muted);">
-        <div style="font-size:2rem;margin-bottom:8px;">💬</div>
-        <p>Aucun commentaire pour l'instant.</p>
+      <div style="padding:48px 32px;text-align:center;color:var(--text-muted);">
+        <div style="width:44px;height:44px;border-radius:var(--radius-md);background:var(--card-2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <p style="font-size:.875rem;">Aucun commentaire pour l'instant.</p>
       </div>
     {% endif %}
   </div>
@@ -85,8 +89,10 @@
 
 <!-- Produit le plus vendu -->
 {% if best_sold %}
-<div style="margin-top:24px;background:var(--card);border:1px solid var(--accent-border);border-radius:var(--radius-lg);padding:24px;display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,var(--accent-faint),transparent);">
-  <div style="font-size:2.5rem;">🏆</div>
+<div style="margin-top:24px;background:linear-gradient(135deg,var(--accent-faint),transparent);border:1px solid var(--accent-border);border-radius:var(--radius-lg);padding:24px;display:flex;align-items:center;gap:20px;">
+  <div style="width:52px;height:52px;border-radius:var(--radius-md);background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+  </div>
   <div>
     <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.10em;color:var(--accent);margin-bottom:4px;">Produit le plus vendu</p>
     <a href="{% url 'supplier_product_detail' best_sold.pk %}" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;">
