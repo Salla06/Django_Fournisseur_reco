@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Email envoyé — RecoShop Pro</title>
+<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'suppliers/css/supplier.css' %}">
+<style>
+  body { min-height:100vh;display:flex;align-items:center;justify-content:center; }
+  .email-card {
+    max-width:480px;width:100%;padding:48px 40px;
+    background:var(--card);border:1px solid var(--divider);
+    border-radius:var(--radius-lg);text-align:center;
+    box-shadow:var(--shadow-lg);
+  }
+  .email-icon { font-size:4rem;display:block;margin-bottom:24px; }
+</style>
+</head>
+<body>
+<div class="supplier-topband"></div>
+<div class="email-card">
+  <span class="email-icon">📧</span>
+  <h1 style="font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;margin-bottom:12px;">
+    Vérifiez votre email
+  </h1>
+  <p style="color:var(--text-muted);line-height:1.7;margin-bottom:24px;">
+    Un lien d'activation a été envoyé à votre adresse email.<br>
+    Cliquez sur ce lien pour activer votre compte fournisseur.
+  </p>
+  <div class="alert alert-info" style="text-align:left;">
+    <strong>Le lien expire dans 24 heures.</strong><br>
+    Si vous ne trouvez pas l'email, vérifiez votre dossier spam.
+  </div>
+  <a href="{% url 'supplier_login' %}" class="btn btn-ghost" style="margin-top:24px;">
+    ← Retour à la connexion
+  </a>
+</div>
+</body>
+</html>

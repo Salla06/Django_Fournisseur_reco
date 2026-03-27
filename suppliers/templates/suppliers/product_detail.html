@@ -1,0 +1,207 @@
+{% extends 'suppliers/base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+{% block page_title %}Détail produit{% endblock %}
+
+{% block content %}
+<div class="sp-page-header">
+  <div>
+    <h1 class="sp-page-title">{{ product.name }}</h1>
+    <p class="sp-page-sub">{{ product.category.name }}{% if product.brand %} · {{ product.brand }}{% endif %}</p>
+  </div>
+  <div style="display:flex;gap:.75rem;">
+    <a href="{% url 'supplier_product_edit' product.pk %}" class="sp-btn sp-btn-secondary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Modifier
+    </a>
+    <a href="{% url 'supplier_products' %}" class="sp-btn sp-btn-ghost">← Retour</a>
+  </div>
+</div>
+
+<!-- Stats rapides -->
+<div class="sp-stats-grid sp-stats-grid-5">
+  <div class="sp-stat-card">
+    <div class="sp-stat-icon sp-stat-icon-gold">★</div>
+    <div class="sp-stat-body">
+      <span class="sp-stat-value">{{ avg_rating }}<small>/5</small></span>
+      <span class="sp-stat-label">Note moyenne</span>
+    </div>
+  </div>
+  <div class="sp-stat-card">
+    <div class="sp-stat-icon sp-stat-icon-blue">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="sp-stat-body">
+      <span class="sp-stat-value">{{ rating_count }}</span>
+      <span class="sp-stat-label">Notes reçues</span>
+    </div>
+  </div>
+  <div class="sp-stat-card">
+    <div class="sp-stat-icon sp-stat-icon-green">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+    </div>
+    <div class="sp-stat-body">
+      <span class="sp-stat-value">{{ total_sold }}</span>
+      <span class="sp-stat-label">Ventes totales</span>
+    </div>
+  </div>
+  <div class="sp-stat-card">
+    <div class="sp-stat-icon sp-stat-icon-blue">💬</div>
+    <div class="sp-stat-body">
+      <span class="sp-stat-value">{{ comments.count }}</span>
+      <span class="sp-stat-label">Commentaires</span>
+    </div>
+  </div>
+  <div class="sp-stat-card">
+    <div class="sp-stat-icon sp-stat-icon-purple">📦</div>
+    <div class="sp-stat-body">
+      <span class="sp-stat-value">{{ product.stock }}</span>
+      <span class="sp-stat-label">En stock</span>
+    </div>
+  </div>
+</div>
+
+<div class="sp-two-col">
+
+  <!-- Distribution des notes -->
+  <div class="sp-card">
+    <div class="sp-card-header">
+      <h2 class="sp-card-title">Distribution des notes</h2>
+    </div>
+    <div class="sp-card-body">
+      {% if rating_count > 0 %}
+        <div style="height:200px;position:relative;">
+          <canvas id="distChart"></canvas>
+        </div>
+        <!-- Barres textuelles -->
+        <div style="margin-top:1.5rem;">
+          {% for star, count in rating_dist.items reversed %}
+          <div class="sp-rating-bar-row">
+            <span class="sp-rating-bar-label">{{ star }}★</span>
+            <div class="sp-rating-bar-track">
+              <div class="sp-rating-bar-fill" style="width:{% if rating_count > 0 %}{% widthratio count rating_count 100 %}{% else %}0{% endif %}%"></div>
+            </div>
+            <span class="sp-rating-bar-count">{{ count }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="sp-empty">
+          <span class="sp-empty-icon">★</span>
+          <p>Pas encore de notes pour ce produit.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Évolution des ventes -->
+  <div class="sp-card">
+    <div class="sp-card-header">
+      <h2 class="sp-card-title">Évolution des ventes (6 mois)</h2>
+    </div>
+    <div class="sp-card-body">
+      {% if total_sold > 0 %}
+        <div style="height:200px;position:relative;">
+          <canvas id="salesChart"></canvas>
+        </div>
+      {% else %}
+        <div class="sp-empty">
+          <span class="sp-empty-icon">📈</span>
+          <p>Aucune vente enregistrée pour l'instant.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Commentaires clients -->
+<div class="sp-card" style="margin-top:1.25rem;">
+  <div class="sp-card-header">
+    <h2 class="sp-card-title">Commentaires clients ({{ comments.count }})</h2>
+  </div>
+  <div class="sp-card-body sp-card-body-flush">
+    {% if comments %}
+      {% for comment in comments %}
+      <div class="sp-comment-item">
+        <div class="sp-comment-meta">
+          <span class="sp-comment-author">{{ comment.user.username }}</span>
+          <span class="sp-comment-date">{{ comment.created_at|date:"d/m/Y à H:i" }}</span>
+        </div>
+        <p class="sp-comment-text">{{ comment.content }}</p>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="sp-empty" style="padding:2rem;">
+        <span class="sp-empty-icon">💬</span>
+        <p>Aucun commentaire pour ce produit.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Distribution des notes
+const distLabels = {{ dist_labels|safe }};
+const distData   = {{ dist_data|safe }};
+
+if (distData.some(v => v > 0)) {
+  new Chart(document.getElementById('distChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: distLabels,
+      datasets: [{
+        data: distData,
+        backgroundColor: ['#ef4444','#f97316','#eab308','#22c55e','#2563eb'],
+        borderRadius: 6,
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { stepSize: 1, color: '#64748b' }, grid: { color: 'rgba(100,116,139,0.1)' } },
+        x: { ticks: { color: '#64748b' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// Ventes
+const salesLabels = {{ sales_labels|safe }};
+const salesData   = {{ sales_data|safe }};
+
+if (salesLabels.length > 0) {
+  new Chart(document.getElementById('salesChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: salesLabels,
+      datasets: [{
+        label: 'Ventes',
+        data: salesData,
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37,99,235,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#2563eb',
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { stepSize: 1, color: '#64748b' }, grid: { color: 'rgba(100,116,139,0.1)' } },
+        x: { ticks: { color: '#64748b' }, grid: { display: false } }
+      }
+    }
+  });
+}
+</script>
+{% endblock %}

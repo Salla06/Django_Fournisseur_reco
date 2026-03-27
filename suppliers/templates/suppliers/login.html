@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Connexion Fournisseur — RecoShop Pro</title>
+<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'suppliers/css/supplier.css' %}">
+<style>
+  body { background: var(--primary); min-height: 100vh; display: grid; }
+  .auth-wrapper {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-hero {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 60px;
+    background: #0f172a;
+  }
+  .auth-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.60) 50%, rgba(30,64,175,0.30) 100%);
+  }
+  .auth-hero-bg-pattern {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(37,99,235,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(30,64,175,0.20) 0%, transparent 50%);
+  }
+  /* Grille de produits (même que client mais teinte bleue) */
+  .products-mosaic {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px; padding: 6px;
+    transform: rotate(-4deg) scale(1.18);
+    transform-origin: center;
+  }
+  .mosaic-img {
+    border-radius: 10px; overflow: hidden;
+    background: #1e293b;
+  }
+  .mosaic-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: saturate(0.6) brightness(0.7) hue-rotate(200deg);
+  }
+  .mosaic-img.span-r2 { grid-row: span 2; }
+  .mosaic-img.span-c2 { grid-column: span 2; }
+  .auth-hero-content { position: relative; z-index: 1; }
+  .auth-hero-logo {
+    position: absolute; top: 40px; left: 60px; z-index: 2;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; font-weight: 400; color: #fff;
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .auth-hero-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.45rem; font-style: italic;
+    color: rgba(245,245,245,0.88);
+    line-height: 1.5; margin-bottom: 20px; max-width: 400px;
+  }
+  .auth-hero-author {
+    font-size: 0.72rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  }
+  .auth-dots { display: flex; gap: 8px; margin-top: 24px; }
+  .auth-dot {
+    height: 3px; border-radius: 3px;
+    background: rgba(37,99,235,0.35);
+  }
+  .auth-dot:first-child { width: 24px; background: var(--accent); }
+  .auth-dot:not(:first-child) { width: 8px; }
+
+  .auth-form-side {
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 48px;
+    border-left: 1px solid var(--divider);
+  }
+  .auth-form-box { width: 100%; max-width: 380px; }
+  .auth-form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem; font-weight: 400;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .auth-form-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px; }
+  .auth-divider {
+    text-align: center; margin: 24px 0; position: relative;
+    color: var(--text-muted); font-size: 0.8rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ''; position: absolute; top: 50%;
+    width: 42%; height: 1px; background: rgba(37,99,235,0.12);
+  }
+  .auth-divider::before { left: 0; }
+  .auth-divider::after  { right: 0; }
+  .auth-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .auth-link:hover { text-decoration: underline; }
+  .fl-group { position: relative; margin-bottom: 20px; }
+  .fl-group input {
+    width: 100%; background: var(--surface-2);
+    border: 1px solid rgba(37,99,235,0.18);
+    border-radius: 10px; padding: 20px 16px 8px;
+    font-size: 0.9rem; color: var(--text); outline: none;
+    transition: border-color 0.3s;
+  }
+  .fl-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+  .fl-group input::placeholder { opacity: 0; }
+  .fl-group label {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem; color: var(--text-muted);
+    transition: all 0.2s; pointer-events: none;
+  }
+  .fl-group input:focus + label,
+  .fl-group input:not(:placeholder-shown) + label {
+    top: 10px; transform: none;
+    font-size: 0.62rem; text-transform: uppercase;
+    letter-spacing: 0.10em; color: var(--accent);
+  }
+  .btn-submit { position: relative; overflow: hidden; }
+  .btn-submit.loading { pointer-events: none; opacity: 0.75; }
+  .btn-submit.loading::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @media (max-width: 700px) {
+    .auth-wrapper { grid-template-columns: 1fr; }
+    .auth-hero { display: none; }
+    .auth-form-side { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="supplier-topband"></div>
+<div class="auth-wrapper">
+
+  <!-- Gauche — hero bleu -->
+  <div class="auth-hero">
+    <div class="products-mosaic">
+      <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1695822822491-d92cee704368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1627544467186-4f4cb4a3c04b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1553531768-c3d6cfd10eeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1593442607435-e4e34991b210?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1680337674070-27a748bd82c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1731855315921-7be11aa1879d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1610768399515-8df89e969e11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img span-c2"><img src="https://images.unsplash.com/photo-1556737137-c2eb736c5e4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1604543447675-5e7a5c508407?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1648712787208-7d52a79c4273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1582106316415-d02d4d0e9066?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+    </div>
+    <div class="auth-hero-bg-pattern"></div>
+    <div class="auth-hero-overlay"></div>
+    <span class="auth-hero-logo">
+      RecoShop <span class="navbar-pro-badge" style="background:#2563eb;">PRO</span>
+    </span>
+    <div class="auth-hero-content">
+      <p class="auth-hero-quote">"Gérez vos produits, suivez vos performances, développez votre activité."</p>
+      <p class="auth-hero-author">Espace Fournisseur</p>
+      <div class="auth-dots">
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Droite — formulaire -->
+  <div class="auth-form-side">
+    <div class="auth-form-box">
+      <h2 class="auth-form-title">Connexion Pro</h2>
+      <p class="auth-form-sub">Accédez à votre espace fournisseur.</p>
+
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">{{ message }}</div>
+      {% endfor %}
+
+      <form method="post" onsubmit="this.querySelector('.btn-submit').classList.add('loading')">
+        {% csrf_token %}
+        <div class="fl-group">
+          <input type="email" name="email" id="email" placeholder=" " value="{{ form.email.value|default:'' }}" required autofocus>
+          <label for="email">Adresse email professionnelle</label>
+        </div>
+        <div class="fl-group">
+          <input type="password" name="password" id="password" placeholder=" " required>
+          <label for="password">Mot de passe</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-shimmer btn-submit w-full" style="justify-content:center;margin-top:4px;font-size:1rem;padding:14px;">
+          Accéder au tableau de bord →
+        </button>
+      </form>
+
+      <div class="auth-divider">ou</div>
+
+      <p style="text-align:center;font-size:.875rem;color:var(--text-muted);">
+        Pas encore de compte ?
+        <a href="{% url 'supplier_register' %}" class="auth-link">Créer un compte fournisseur</a>
+      </p>
+
+      <div style="margin-top:32px;padding:16px;background:var(--accent-faint);border:1px solid var(--accent-border);border-radius:10px;">
+        <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;text-transform:uppercase;letter-spacing:.10em;">Interface client</p>
+        <p style="font-size:.85rem;color:var(--text-sub);">
+          Vous êtes un client ?
+          <a href="{% url 'login' %}" class="auth-link">Connexion espace client →</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

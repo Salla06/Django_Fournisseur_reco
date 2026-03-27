@@ -1,0 +1,258 @@
+/* ═══════════════════════════════════════════════════════════
+   RECOSHOP PRO — Surcharge couleurs fournisseur
+   Charge après main.css — remplace vert → bleu professionnel
+═══════════════════════════════════════════════════════════ */
+
+/* ── Variables : accent vert → bleu #2563eb ── */
+:root {
+  --accent:        #2563eb;
+  --accent-hover:  #1e40af;
+  --accent-dim:    rgba(37, 99, 235, 0.09);
+  --accent-border: rgba(37, 99, 235, 0.22);
+  --accent-faint:  rgba(37, 99, 235, 0.09);
+  --price-color:   #1e40af;
+
+  --badge-algo:      #2563eb;
+  --badge-algo-bg:   rgba(37, 99, 235, 0.10);
+  --badge-algo-text: #1e40af;
+
+  --gradient: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+[data-theme="dark"] {
+  --accent:        #60a5fa;
+  --accent-hover:  #93c5fd;
+  --accent-dim:    rgba(96, 165, 250, 0.12);
+  --accent-border: rgba(96, 165, 250, 0.25);
+  --accent-faint:  rgba(96, 165, 250, 0.12);
+  --price-color:   #93c5fd;
+
+  --badge-algo:      #60a5fa;
+  --badge-algo-bg:   rgba(96, 165, 250, 0.13);
+  --badge-algo-text: #bfdbfe;
+}
+
+/* ── Bandeau "Espace Pro" en haut de la navbar ── */
+.supplier-topband {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #1e40af, #3b82f6);
+  z-index: 1001;
+}
+
+/* Décale la navbar pour le bandeau */
+body.supplier-body .navbar {
+  top: 3px;
+}
+body.supplier-body .page-wrapper {
+  padding-top: calc(var(--navbar-h) + 3px);
+}
+body.supplier-body .mobile-menu {
+  top: calc(var(--navbar-h) + 3px);
+}
+
+/* ── Badge PRO dans le logo navbar ── */
+.navbar-pro-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+/* ── Stats grid pour dashboard ── */
+.supplier-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ── Table produits fournisseur ── */
+.supplier-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.supplier-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  border-bottom: 1px solid var(--divider);
+  background: var(--card-2);
+  white-space: nowrap;
+}
+.supplier-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+  color: var(--text);
+}
+.supplier-table tr:last-child td { border-bottom: none; }
+.supplier-table tbody tr:hover td { background: var(--card-hover); }
+
+.supplier-table__thumb {
+  width: 44px; height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--divider);
+  display: block;
+}
+.supplier-table__emoji {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+
+/* ── Action buttons dans la table ── */
+.supplier-actions { display: flex; gap: 6px; align-items: center; }
+.supplier-action {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background var(--transition);
+  color: var(--text-muted);
+}
+.supplier-action:hover { color: var(--text); background: var(--card-hover); }
+.supplier-action--edit:hover  { color: var(--accent); background: var(--accent-dim); }
+.supplier-action--delete:hover { color: var(--cta); background: var(--cta-dim); }
+
+/* ── Product form 2-col ── */
+.supplier-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .supplier-form-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Aperçu carte produit ── */
+.supplier-preview-card {
+  background: var(--card);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--navbar-h) + 24px);
+}
+.supplier-preview-img {
+  width: 100%; padding-bottom: 70%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card-2);
+  font-size: 3rem;
+}
+.supplier-preview-img-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  background-size: cover; background-position: center;
+}
+.supplier-preview-body { padding: 16px; }
+.supplier-preview-cat {
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.10em;
+  color: var(--accent); margin-bottom: 4px;
+}
+.supplier-preview-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+  line-height: 1.35;
+}
+.supplier-preview-desc {
+  font-size: 0.8rem; color: var(--text-muted);
+  line-height: 1.5; margin-bottom: 12px;
+}
+.supplier-preview-price {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 1rem;
+  color: var(--price-color);
+}
+.supplier-preview-original {
+  font-size: 0.75rem; color: var(--text-muted);
+  text-decoration: line-through; margin-left: 6px;
+}
+
+/* ── Section card (panel blanc) ── */
+.supplier-section {
+  background: var(--card);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.supplier-section__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--divider);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.supplier-section__title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--text); letter-spacing: -0.01em;
+}
+.supplier-section__body { padding: 24px; }
+.supplier-section__body--flush { padding: 0; }
+
+/* ── Comment list ── */
+.supplier-comment {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--divider);
+}
+.supplier-comment:last-child { border-bottom: none; }
+.supplier-comment__meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.supplier-comment__author { font-size: 0.8rem; font-weight: 700; color: var(--text); }
+.supplier-comment__product { font-size: 0.78rem; color: var(--accent); font-weight: 600; }
+.supplier-comment__date   { font-size: 0.72rem; color: var(--text-muted); }
+.supplier-comment__text   { font-size: 0.875rem; color: var(--text-sub); line-height: 1.6; }
+
+/* ── Rating bars ── */
+.rating-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rating-bar-label { font-size: 0.78rem; color: var(--text-sub); width: 20px; text-align: right; }
+.rating-bar-track {
+  flex: 1; height: 7px;
+  background: var(--card-2); border-radius: 99px; overflow: hidden;
+}
+.rating-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  border-radius: 99px;
+}
+.rating-bar-count { font-size: 0.72rem; color: var(--text-muted); width: 20px; }
+
+/* ── Delete confirmation page ── */
+.supplier-delete-box {
+  max-width: 520px; margin: 0 auto;
+  text-align: center; padding: 48px 32px;
+}
+.supplier-delete-icon { font-size: 4rem; margin-bottom: 16px; }
+
+/* ── Responsive table ── */
+@media (max-width: 768px) {
+  .supplier-stats-grid { grid-template-columns: 1fr 1fr; }
+  .supplier-table th:nth-child(3),
+  .supplier-table td:nth-child(3),
+  .supplier-table th:nth-child(5),
+  .supplier-table td:nth-child(5) { display: none; }
+}

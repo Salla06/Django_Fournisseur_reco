@@ -1,0 +1,131 @@
+{% extends 'suppliers/base.html' %}
+
+{% block title %}Mon profil{% endblock %}
+{% block page_title %}Mon profil{% endblock %}
+
+{% block content %}
+<div class="sp-page-header">
+  <div>
+    <h1 class="sp-page-title">Mon profil fournisseur</h1>
+    <p class="sp-page-sub">Gérez les informations de votre entreprise</p>
+  </div>
+</div>
+
+<div class="sp-two-col">
+
+  <!-- Informations entreprise -->
+  <div>
+    <div class="sp-card">
+      <div class="sp-card-header">
+        <h2 class="sp-card-title">Informations de l'entreprise</h2>
+      </div>
+      <div class="sp-card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Logo actuel -->
+          {% if supplier.logo %}
+          <div style="margin-bottom:1.5rem;text-align:center;">
+            <img src="{{ supplier.logo.url }}" alt="Logo" style="max-height:100px;border-radius:8px;border:2px solid var(--sp-border);">
+          </div>
+          {% endif %}
+
+          <div class="sp-field">
+            <label class="sp-label" for="id_logo">Logo de l'entreprise</label>
+            <input type="file" name="logo" id="id_logo" class="sp-input sp-file-input" accept="image/*">
+            <p class="sp-field-hint-text">PNG, JPG ou WebP — max 5 Mo</p>
+          </div>
+
+          <div class="sp-field">
+            <label class="sp-label" for="id_company_name">Nom de l'entreprise <span class="sp-required">*</span></label>
+            <input type="text" name="company_name" id="id_company_name" class="sp-input {% if form.company_name.errors %}sp-input-error{% endif %}"
+                   value="{{ form.company_name.value|default:'' }}" required>
+            {% if form.company_name.errors %}<span class="sp-field-error">{{ form.company_name.errors.0 }}</span>{% endif %}
+          </div>
+
+          <div class="sp-field">
+            <label class="sp-label" for="id_phone">Téléphone</label>
+            <input type="text" name="phone" id="id_phone" class="sp-input"
+                   value="{{ form.phone.value|default:'' }}" placeholder="+221 77 000 00 00">
+          </div>
+
+          <div class="sp-field">
+            <label class="sp-label" for="id_address">Adresse</label>
+            <textarea name="address" id="id_address" class="sp-input sp-textarea" rows="3"
+                      placeholder="Votre adresse complète…">{{ form.address.value|default:'' }}</textarea>
+          </div>
+
+          <div class="sp-field">
+            <label class="sp-label" for="id_bio">Présentation de l'entreprise</label>
+            <textarea name="bio" id="id_bio" class="sp-input sp-textarea" rows="4"
+                      placeholder="Décrivez votre entreprise et vos spécialités…">{{ form.bio.value|default:'' }}</textarea>
+          </div>
+
+          <div class="sp-form-actions" style="margin-top:1.5rem;">
+            <button type="submit" class="sp-btn sp-btn-primary">Enregistrer les informations</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compte et sécurité -->
+  <div>
+
+    <!-- Infos compte -->
+    <div class="sp-card" style="margin-bottom:1.25rem;">
+      <div class="sp-card-header">
+        <h2 class="sp-card-title">Compte</h2>
+      </div>
+      <div class="sp-card-body">
+        <div class="sp-profile-info-row">
+          <span class="sp-profile-info-label">Email</span>
+          <span class="sp-profile-info-value">{{ user.email }}</span>
+        </div>
+        <div class="sp-profile-info-row">
+          <span class="sp-profile-info-label">Membre depuis</span>
+          <span class="sp-profile-info-value">{{ supplier.created_at|date:"d/m/Y" }}</span>
+        </div>
+        <div class="sp-profile-info-row">
+          <span class="sp-profile-info-label">Statut</span>
+          <span class="sp-profile-info-value">
+            {% if supplier.is_verified %}
+              <span class="sp-badge sp-badge-verified">✓ Compte vérifié</span>
+            {% else %}
+              <span class="sp-badge sp-badge-pending">En attente de vérification</span>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Changer le mot de passe -->
+    <div class="sp-card">
+      <div class="sp-card-header">
+        <h2 class="sp-card-title">Changer le mot de passe</h2>
+      </div>
+      <div class="sp-card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <!-- Champs vides pour que Django identifie ce formulaire comme le profil -->
+          <input type="hidden" name="company_name" value="{{ supplier.company_name }}">
+
+          <div class="sp-field">
+            <label class="sp-label" for="new_password1">Nouveau mot de passe</label>
+            <input type="password" name="new_password1" id="new_password1" class="sp-input" placeholder="8 caractères minimum" minlength="8">
+          </div>
+          <div class="sp-field">
+            <label class="sp-label" for="new_password2">Confirmer le nouveau mot de passe</label>
+            <input type="password" name="new_password2" id="new_password2" class="sp-input" placeholder="••••••••" minlength="8">
+          </div>
+
+          <div class="sp-form-actions" style="margin-top:1rem;">
+            <button type="submit" class="sp-btn sp-btn-secondary">Changer le mot de passe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

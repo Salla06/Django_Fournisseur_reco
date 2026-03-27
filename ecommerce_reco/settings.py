@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recommendations',
+    'suppliers',
 ]
 
 # ── Middleware ─────────────────────────────────────────────────────────────────
@@ -71,7 +72,10 @@ ROOT_URLCONF = 'ecommerce_reco.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'recommendations' / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'recommendations' / 'templates',
+            BASE_DIR / 'suppliers' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,7 +119,10 @@ USE_TZ   = True
 
 # ── Fichiers statiques ─────────────────────────────────────────────────────────
 STATIC_URL  = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'recommendations' / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'recommendations' / 'static',
+    BASE_DIR / 'suppliers' / 'static',
+]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
