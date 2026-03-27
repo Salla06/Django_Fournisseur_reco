@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="{% static 'suppliers/css/supplier.css' %}">
 {% block extra_css %}{% endblock %}
 </head>
-<body class="supplier-body">
+<body class="supplier-body{% if page_bg %} has-bg{% endif %}">
 
 <!-- Bandeau bleu Pro -->
 <div class="supplier-topband"></div>

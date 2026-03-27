@@ -152,6 +152,7 @@ def dashboard_view(request):
         'chart_data': json.dumps(chart_data),
         'recent_comments': recent_comments,
         'active': 'dashboard',
+        'page_bg': True,
     }
     return render(request, 'suppliers/dashboard.html', context)
 
@@ -191,6 +192,7 @@ def products_view(request):
         'search_q': search_q,
         'current_category': category_slug,
         'active': 'products',
+        'page_bg': True,
     }
     return render(request, 'suppliers/products.html', context)
 
@@ -357,5 +359,6 @@ def profile_view(request):
         'supplier': supplier,
         'form': form,
         'active': 'profile',
+        'page_bg': True,
     }
     return render(request, 'suppliers/profile.html', context)
