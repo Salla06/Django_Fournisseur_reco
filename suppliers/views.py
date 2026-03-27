@@ -198,7 +198,7 @@ def products_view(request):
 @supplier_required
 def product_add_view(request):
     supplier = request.user.supplier
-    form = ProductForm(request.POST or None)
+    form = ProductForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST' and form.is_valid():
         product = form.save()
@@ -224,7 +224,7 @@ def product_edit_view(request, pk):
     )
     product = supplier_product.product
 
-    form = ProductForm(request.POST or None, instance=product)
+    form = ProductForm(request.POST or None, request.FILES or None, instance=product)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, f'Produit « {product.name} » mis à jour !')

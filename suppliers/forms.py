@@ -44,7 +44,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = (
             'name', 'category', 'description', 'price', 'original_price',
-            'image_url', 'image_color', 'image_emoji', 'tags', 'brand',
+            'image_file', 'image_color', 'image_emoji', 'tags', 'brand',
             'stock', 'is_featured',
         )
         widgets = {
@@ -58,7 +58,7 @@ class ProductForm(forms.ModelForm):
             'description': 'Description',
             'price': 'Prix (FCFA)',
             'original_price': 'Prix original (FCFA) — optionnel',
-            'image_url': 'URL de l\'image',
+            'image_file': 'Image du produit',
             'image_color': 'Couleur de la carte',
             'image_emoji': 'Emoji représentatif',
             'tags': 'Tags (séparés par des virgules)',
@@ -71,6 +71,6 @@ class ProductForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.all().order_by('name')
         self.fields['original_price'].required = False
-        self.fields['image_url'].required = False
+        self.fields['image_file'].required = False
         self.fields['brand'].required = False
         self.fields['tags'].required = False

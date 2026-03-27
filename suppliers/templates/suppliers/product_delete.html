@@ -30,7 +30,9 @@
     <!-- Résumé produit -->
     <div class="supplier-delete-summary">
       <div class="supplier-delete-thumb" style="--thumb-color: {{ product.image_color }}">
-        {% if product.image_url %}
+        {% if product.image_file %}
+          <img src="{{ product.image_file.url }}" alt="{{ product.name }}" class="supplier-delete-thumb-img">
+        {% elif product.image_url %}
           <img src="{{ product.image_url }}" alt="{{ product.name }}" class="supplier-delete-thumb-img">
         {% else %}
           {{ product.image_emoji }}

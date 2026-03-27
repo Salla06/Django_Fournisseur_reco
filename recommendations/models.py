@@ -53,6 +53,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image_url = models.URLField(blank=True, null=True)
+    image_file = models.ImageField(upload_to='product_images/', null=True, blank=True)
     image_color = models.CharField(max_length=20, default='#D4AF37')
     image_emoji = models.CharField(max_length=10, default='🛍️')
     tags = models.CharField(max_length=500, blank=True)

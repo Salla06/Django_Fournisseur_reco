@@ -57,7 +57,9 @@
         {% for product in products %}
         <tr style="cursor:pointer;" onclick="if(!event.target.closest('.supplier-actions'))window.location='{% url 'supplier_product_detail' product.pk %}'">
           <td>
-            {% if product.image_url %}
+            {% if product.image_file %}
+              <img src="{{ product.image_file.url }}" alt="{{ product.name }}" class="supplier-table__thumb">
+            {% elif product.image_url %}
               <img src="{{ product.image_url }}" alt="{{ product.name }}" class="supplier-table__thumb">
             {% else %}
               <div class="supplier-table__emoji" style="background:{{ product.image_color }}22;">{{ product.image_emoji }}</div>
